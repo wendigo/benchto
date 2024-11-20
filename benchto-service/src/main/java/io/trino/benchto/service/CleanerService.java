@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 
@@ -37,7 +36,6 @@ public class CleanerService
     @Autowired
     private BenchmarkRunRepo benchmarkRunRepo;
 
-    @Transactional
     @Scheduled(fixedDelay = 1000 * 60 * 60)
     public void cleanUpStaleBenchmarks()
     {
@@ -49,7 +47,7 @@ public class CleanerService
             LOG.info("Failing stale benchmark - {}", benchmarkRun);
             benchmarkRun.setEnded(currentDate);
             benchmarkRun.setStatus(FAILED);
-            benchmarkRunRepo.save(benchmarkRun);
+            benchmarkRunRepo.saveAndFlush(benchmarkRun);
         }
     }
 }
